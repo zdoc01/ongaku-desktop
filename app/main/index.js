@@ -24,6 +24,14 @@ let closing
 
 const mainURL = 'file://' + path.join(__dirname, '../renderer', 'index.html');
 
+
+const sendWebviewMsg = msg => (
+	mainWindow.webContents.executeJavaScript(`
+		webview = document.querySelector('webview');
+		webview.getWebContents().send(\`${msg}\`);
+	`)
+);
+
 function onTrayToggle(e) {
 		mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show()
 }
@@ -100,13 +108,14 @@ app.on('ready', () => {
 
 	tray = new Tray(onTrayToggle, onTrayClose)
 	tray.on(PLAY_SONG, () => {
-		mainWindow.webContents.send(PLAY_SONG)
+		sendWebviewMsg(PLAY_SONG)
 	})
 	tray.on(PAUSE_SONG, () => {
-		mainWindow.webContents.send(PAUSE_SONG)
+		sendWebviewMsg(PAUSE_SONG)
 	})
 	tray.on(RESTART_SONG, () => {
-		mainWindow.webContents.send(RESTART_SONG)
+		console.log('restart')
+		sendWebviewMsg(RESTART_SONG)
 	})
 
 	const page = mainWindow.webContents
